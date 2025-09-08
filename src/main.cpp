@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <cmath>
 #include <vector>
 
 int main() {
@@ -6,7 +7,7 @@ int main() {
 	const int w = 800;
 	const int h = 600;
 	sf::RenderWindow window(sf::VideoMode({ w, h }), "Pong");
-	
+
 	// Set framerate limit
 	window.setFramerateLimit(60);
 
@@ -38,7 +39,7 @@ int main() {
 	}
 
 	// Ball velocity
-	sf::Vector2f ballVelocity({-5.f, 3.f});
+	sf::Vector2f ballVelocity({ -5.f, 3.f });
 
 	bool gameStarted = false;
 
@@ -59,6 +60,7 @@ int main() {
 				}
 			}
 		}
+
 		// Player movement
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W) && player.getPosition().y > 0)
 			player.move({ 0.f, -6.f });
@@ -83,7 +85,15 @@ int main() {
 			if (ball.getGlobalBounds().findIntersection(player.getGlobalBounds()) ||
 				ball.getGlobalBounds().findIntersection(ai.getGlobalBounds())) {
 				ballVelocity.x = -ballVelocity.x;
+				ballVelocity.x *= 1.1f;
 			}
+			
+			// Cap the speed
+			float maxSpeed = 10.f;
+			if (std::abs(ballVelocity.x) > maxSpeed)
+				ballVelocity.x = (ballVelocity.x > 0 ? maxSpeed : -maxSpeed);
+			if (std::abs(ballVelocity.y) > maxSpeed)
+				ballVelocity.y = (ballVelocity.y > 0 ? maxSpeed : -maxSpeed);
 
 			if (ball.getPosition().x < 0 || ball.getPosition().x > 800) {
 				// Restart
