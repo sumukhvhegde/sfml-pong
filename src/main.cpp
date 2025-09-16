@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <vector>
+#include <iostream>
+#include <cstdlib>
 
 int main() {
 	// Define window
@@ -42,6 +44,25 @@ int main() {
 	sf::Vector2f ballVelocity({ -5.f, 3.f });
 
 	bool gameStarted = false;
+	bool isPaused = false;
+
+	// Load font
+	sf::Font font;
+	if (!font.openFromFile("font/arialbd.ttf")) {
+		std::cerr << "Error: couldn't load the font!" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	// Pause text
+	sf::Text pauseText(font);
+	pauseText.setString("PAUSED!");
+	pauseText.setCharacterSize(50);
+	pauseText.setFillColor(sf::Color::White);
+	
+	sf::FloatRect bounds = pauseText.getLocalBounds();
+	pauseText.setOrigin({ bounds.size.x / 2.f, bounds.size.y / 2.f });
+
+	pauseText.setPosition({ w / 2.f, h / 2.f });
 
 	// While window is open
 	while (window.isOpen()) {
@@ -58,23 +79,28 @@ int main() {
 						ball.setPosition({ 400.f, 300.f });
 					}
 				}
+				if (key->scancode == sf::Keyboard::Scan::P) {
+					if (gameStarted) {
+						isPaused = !isPaused;
+					}
+				}
 			}
 		}
+		
+		// If game is started and not paused
+		if (gameStarted && !isPaused) {
+			// Player movement
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W) && player.getPosition().y > 0)
+				player.move({ 0.f, -6.f });
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S) && player.getPosition().y + player.getSize().y < 600)
+				player.move({ 0.f, 6.f });
 
-		// Player movement
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::W) && player.getPosition().y > 0)
-			player.move({ 0.f, -6.f });
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scan::S) && player.getPosition().y + player.getSize().y < 600)
-			player.move({ 0.f, 6.f });
+			// AI movement
+			if (ball.getPosition().y + ball.getRadius() < ai.getPosition().y + ai.getSize().y / 2)
+				ai.move({ 0.f, -5.f });
+			else if (ball.getPosition().y + ball.getRadius() > ai.getPosition().y + ai.getSize().y / 2)
+				ai.move({ 0.f, 5.f });
 
-		// AI movement
-		if (ball.getPosition().y + ball.getRadius() < ai.getPosition().y + ai.getSize().y / 2)
-			ai.move({ 0.f, -5.f });
-		else if (ball.getPosition().y + ball.getRadius() > ai.getPosition().y + ai.getSize().y / 2)
-			ai.move({ 0.f, 5.f });
-
-		// Ball movement
-		if (gameStarted) {
 			ball.move(ballVelocity);
 
 			// Bounce off top and bottom walls
@@ -105,6 +131,11 @@ int main() {
 		// Clear window
 		window.clear(sf::Color(14, 16, 18));
 
+		// If game is paused
+		if (isPaused) {
+			window.draw(pauseText);
+		}
+
 		// Draw shapes
 		window.draw(player);
 		window.draw(ai);
@@ -118,5 +149,5 @@ int main() {
 		window.display();
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
