@@ -1,7 +1,7 @@
 # Pong Game
 
 A simple Pong game built with **C++** and **SFML 3.0.0**.  
-This is my first version - basic gameplay is ready, but I may improve it in the future.
+The basic gameplay is ready, but I may improve it in the future.
 
 ## Controls
 - **Space**: Start the game
@@ -14,4 +14,6 @@ This is my first version - basic gameplay is ready, but I may improve it in the 
 - [SFML 3.0.0](https://www.sfml-dev.org/)  
 
 ## Screenshot
-![Screenshot](screenshot/1.png)
+![Screenshot](screenshots/1.png)
+![Screenshot](screenshots/2.png)
+![Screenshot](screenshots/3.png)
