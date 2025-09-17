@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 int main() {
 	// Define window
@@ -11,7 +12,7 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode({ w, h }), "Pong");
 
 	// Set framerate limit
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(72);
 
 	// Game objects
 	sf::RectangleShape player;
@@ -45,6 +46,11 @@ int main() {
 
 	bool gameStarted = false;
 	bool isPaused = false;
+	bool hasWon = false;
+
+	// Score
+	int playerScore = 0;
+	int aiScore = 0;
 
 	// Load font
 	sf::Font font;
@@ -58,11 +64,29 @@ int main() {
 	pauseText.setString("PAUSED!");
 	pauseText.setCharacterSize(50);
 	pauseText.setFillColor(sf::Color::White);
-	
+
 	sf::FloatRect bounds = pauseText.getLocalBounds();
 	pauseText.setOrigin({ bounds.size.x / 2.f, bounds.size.y / 2.f });
 
 	pauseText.setPosition({ w / 2.f, h / 2.f });
+
+	// Player Score Text
+	sf::Text playerScoreText(font);
+	playerScoreText.setCharacterSize(30);
+	playerScoreText.setFillColor(sf::Color::White);
+	playerScoreText.setPosition({200.f, 20.f});
+
+	// AI Score Text
+	sf::Text aiScoreText(font);
+	aiScoreText.setCharacterSize(30);
+	aiScoreText.setFillColor(sf::Color::White);
+	aiScoreText.setPosition({ 600.f, 20.f });
+
+	// Win Text
+	sf::Text winText(font);
+	winText.setCharacterSize(50);
+	winText.setFillColor(sf::Color::White);
+	winText.setPosition({ w / 2.f, h / 2.f });
 
 	// While window is open
 	while (window.isOpen()) {
@@ -111,7 +135,7 @@ int main() {
 			if (ball.getGlobalBounds().findIntersection(player.getGlobalBounds()) ||
 				ball.getGlobalBounds().findIntersection(ai.getGlobalBounds())) {
 				ballVelocity.x = -ballVelocity.x;
-				ballVelocity.x *= 1.1f;
+				ballVelocity.x *= 1.4f;
 			}
 			
 			// Cap the speed
@@ -121,10 +145,43 @@ int main() {
 			if (std::abs(ballVelocity.y) > maxSpeed)
 				ballVelocity.y = (ballVelocity.y > 0 ? maxSpeed : -maxSpeed);
 
-			if (ball.getPosition().x < 0 || ball.getPosition().x > 800) {
-				// Restart
+			if (ball.getPosition().x < 0) {
+				// AI scores
+				aiScore++;
 				ball.setPosition({ 400.f, 300.f });
 				ballVelocity = { -5.f, -3.f };
+			}
+
+			if (ball.getPosition().x > 800) {
+				// Player scores
+				playerScore++;
+				ball.setPosition({ 400.f, 300.f });
+				ballVelocity = { 5.f, -3.f };
+			}
+
+			playerScoreText.setString(std::to_string(playerScore));
+			aiScoreText.setString(std::to_string(aiScore));
+
+			if (playerScore >= 11) {
+				winText.setString("You Win!");
+				sf::FloatRect bounds = winText.getLocalBounds();
+				winText.setOrigin({ bounds.size.x / 2.f, bounds.size.y / 2.f });
+				winText.setPosition({ w / 2.f, h / 2.f });
+
+				hasWon = true;
+				isPaused = true;
+				gameStarted = false;
+			}
+
+			if (aiScore >= 11) {
+				winText.setString("Opponent Wins!");
+				sf::FloatRect bounds = winText.getLocalBounds();
+				winText.setOrigin({ bounds.size.x / 2.f, bounds.size.y / 2.f });
+				winText.setPosition({ w / 2.f, h / 2.f });
+
+				hasWon = true;
+				isPaused = true;
+				gameStarted = false;
 			}
 		}
 
@@ -132,7 +189,7 @@ int main() {
 		window.clear(sf::Color(14, 16, 18));
 
 		// If game is paused
-		if (isPaused) {
+		if (isPaused && !hasWon) {
 			window.draw(pauseText);
 		}
 
@@ -140,6 +197,13 @@ int main() {
 		window.draw(player);
 		window.draw(ai);
 		window.draw(ball);
+
+		window.draw(playerScoreText);
+		window.draw(aiScoreText);
+
+		if (hasWon) {
+			window.draw(winText);
+		}
 
 		for (auto& segment : centerLine) {
 			window.draw(segment);
