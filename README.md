@@ -7,6 +7,7 @@ The basic gameplay is ready, but I may improve it in the future.
 - **Space**: Start the game
 - **W / S**: Move left paddle up / down  
 - **P**: Pause/Resume the game
+- **R**: Restart game
 - **Esc**: Quit game  
 
 ## Requirements
