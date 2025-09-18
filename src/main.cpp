@@ -9,7 +9,7 @@ int main() {
 	// Define window
 	const int w = 800;
 	const int h = 600;
-	sf::RenderWindow window(sf::VideoMode({ w, h }), "Pong");
+	sf::RenderWindow window(sf::VideoMode({ w, h }), "Pong", sf::Style::Titlebar | sf::Style::Close);
 
 	// Set framerate limit
 	window.setFramerateLimit(72);
@@ -88,6 +88,25 @@ int main() {
 	winText.setFillColor(sf::Color::White);
 	winText.setPosition({ w / 2.f, h / 2.f });
 
+	auto resetGame = [&](bool fullReset = true) {
+		// Reset ball position and velocity
+		ball.setPosition({ 400.f, 300.f });
+		ballVelocity = { -5.f, -3.f };
+
+		// Reset paddles
+		player.setPosition({ 30.f, 250.f });
+		ai.setPosition({ 750.f, 250.f });
+
+		if (fullReset) {
+			playerScore = 0;
+			aiScore = 0;
+			hasWon = false;
+		}
+
+		gameStarted = false;
+		isPaused = false;
+	};
+
 	// While window is open
 	while (window.isOpen()) {
 		while (std::optional event = window.pollEvent()) {
@@ -107,6 +126,9 @@ int main() {
 					if (gameStarted) {
 						isPaused = !isPaused;
 					}
+				}
+				if (key->scancode == sf::Keyboard::Scan::R) {
+					resetGame(true);
 				}
 			}
 		}
