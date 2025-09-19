@@ -14,7 +14,7 @@ The basic gameplay is ready, but I may improve it in the future.
 - C++17 (or later)  
 - [SFML 3.0.0](https://www.sfml-dev.org/)  
 
-## Screenshot
+## Screenshots
 ![Screenshot](screenshots/1.png)
 ![Screenshot](screenshots/2.png)
 ![Screenshot](screenshots/3.png)
