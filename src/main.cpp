@@ -107,6 +107,23 @@ int main() {
 		isPaused = false;
 	};
 
+	sf::Text restartText(font);
+	restartText.setString("Press R to restart the game!");
+	restartText.setCharacterSize(20);
+	restartText.setFillColor(sf::Color::White);
+
+	sf::FloatRect restartTextBounds = restartText.getLocalBounds();
+
+	restartText.setOrigin({ restartTextBounds.size.x / 2.f, restartTextBounds.size.y / 2.f });
+	restartText.setPosition({ w / 2.f, h - 40.f });
+
+	sf::RectangleShape resBg;
+	sf::Vector2f resBgSize = {w, restartTextBounds.size.y + 50.f};
+	resBg.setSize(resBgSize);
+	
+	resBg.setFillColor(sf::Color::Black);
+	resBg.setPosition({ 0.f, h - resBgSize.y });
+
 	// While window is open
 	while (window.isOpen()) {
 		while (std::optional event = window.pollEvent()) {
@@ -223,12 +240,14 @@ int main() {
 		window.draw(playerScoreText);
 		window.draw(aiScoreText);
 
-		if (hasWon) {
-			window.draw(winText);
-		}
-
 		for (auto& segment : centerLine) {
 			window.draw(segment);
+		}
+
+		if (hasWon) {
+			window.draw(resBg);
+			window.draw(restartText);
+			window.draw(winText);
 		}
 
 		// Display
